@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token Radar — which pre-token protocols are worth farming</title>
+<link rel="stylesheet" href="app.css">
+<script src="../data.js"></script>
+</head>
+<body>
+<header class="mast">
+  <div>
+    <h1>TOKEN RADAR</h1>
+    <p class="sub">Pre-token protocols, ranked by what their token would be worth if their record stays as it is.</p>
+  </div>
+  <div class="mast-stats" id="mastStats"></div>
+</header>
+
+<section class="model" id="modelBox">
+  <h2>How the implied value is built</h2>
+  <p>Every row is scored by the same formula, from the snapshot's own figures only — no protocol name is ever special-cased:</p>
+  <p class="formula">implied = TVL × 0.30 × growth × maturity × breadth</p>
+  <ul>
+    <li><b>Growth</b> — the 7-day TVL change, clamped to −50%…+100%. Losses weigh more than gains (×0.9 below zero, ×0.6 above).</li>
+    <li><b>Maturity</b> — 0.55 + up to 0.45 for up to 3 years tracked with no token. A protocol that ran for years without issuing a token has more to price in.</li>
+    <li><b>Breadth</b> — +3% per extra chain, up to 4 chains. Multi-chain TVL is stickier.</li>
+  </ul>
+  <p class="note">“Records no token” means DefiLlama's record carries none — never that the protocol has none. Live-token protocols are shown separately, at the market's own value.</p>
+  <div class="sandbox">
+    <h3>Model sandbox — move a weight, watch the board re-rank</h3>
+    <label>Base multiple <input type="range" id="sbBase" min="0.1" max="0.6" step="0.05" value="0.3"> <span id="sbBaseVal">0.30</span></label>
+    <label>Growth weight (up) <input type="range" id="sbUp" min="0" max="1" step="0.1" value="0.6"> <span id="sbUpVal">0.6</span></label>
+    <label>Growth weight (down) <input type="range" id="sbDown" min="0" max="1.5" step="0.1" value="0.9"> <span id="sbDownVal">0.9</span></label>
+    <button id="sbReset" type="button">Reset to radar-2</button>
+  </div>
+</section>
+
+<nav class="controls">
+  <input id="q" type="search" placeholder="Search a protocol…" aria-label="Search protocols">
+  <select id="cat" aria-label="Filter by category"><option value="">All categories</option></select>
+  <select id="chain" aria-label="Filter by chain"><option value="">All chains</option></select>
+  <label class="check"><input type="checkbox" id="watchOnly"> Watchlist only</label>
+  <select id="sort" aria-label="Sort board">
+    <option value="rank">Sort: rank</option>
+    <option value="tvl">Sort: TVL</option>
+    <option value="growth">Sort: 7-day growth</option>
+    <option value="age">Sort: age</option>
+  </select>
+</nav>
+
+<main>
+  <section class="board">
+    <h2 id="boardTitle">Ranked board</h2>
+    <p class="count" id="count"></p>
+    <table>
+      <thead><tr><th>#</th><th>Protocol</th><th>Category</th><th>Chains</th><th>TVL</th><th>7d</th><th>Implied value</th><th></th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </section>
+
+  <aside class="detail" id="detail">
+    <h2>Protocol detail</h2>
+    <p class="hint">Click a row to see its model breakdown and farm plan.</p>
+    <div id="detailBody"></div>
+  </aside>
+</main>
+
+<section class="live">
+  <h2>Already trading — the market's own values</h2>
+  <p>These protocols already have a token, so they are not ranked. Their market cap is shown for comparison with the board's implied values.</p>
+  <table>
+    <thead><tr><th>Protocol</th><th>Category</th><th>TVL</th><th>Market cap</th><th>7d</th></tr></thead>
+    <tbody id="liveRows"></tbody>
+  </table>
+</section>
+
+<footer>
+  <p id="sourceLine"></p>
+  <p>Snapshot: DefiLlama public API, fetched 2026-11-14. Implied values are this radar's own claim, never a prediction that a token will be issued.</p>
+</footer>
+<script src="app.js"></script>
+</body>
+</html>
